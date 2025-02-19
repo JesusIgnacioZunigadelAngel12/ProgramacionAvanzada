@@ -1,1 +1,266 @@
+//Programa 1
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
 
+public class Fejemplo_radio {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Marco_radio minarco = new Marco_radio();
+            minarco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        });
+    }
+}
+
+class Marco_radio extends JFrame {
+    private Lamina_radio milamina;
+
+    public Marco_radio() {
+        setTitle("Selector de Tamaño de Fuente");
+        setBounds(550, 500, 500, 550);
+        milamina = new Lamina_radio();
+        add(milamina);
+        setVisible(true);
+    }
+}
+
+class Lamina_radio extends JPanel {
+    private JLabel texto;
+    private JPanel lamina_botones;
+    private ButtonGroup migrupo;
+
+    public Lamina_radio() {
+        setLayout(new BorderLayout());
+
+        // Texto central
+        texto = new JLabel("En un lugar de la mancha cuyo nombre......");
+        texto.setFont(new Font("Serif", Font.PLAIN, 12));
+        add(texto, BorderLayout.CENTER);
+
+        // Panel para botones de radio
+        lamina_botones = new JPanel();
+        migrupo = new ButtonGroup();
+
+        // Crear botones de radio con tamaños predefinidos
+        colocarBotones("Pequeño", false, 10);
+        colocarBotones("Mediano", true, 12); // Seleccionado por defecto
+        colocarBotones("Grande", false, 18);
+        colocarBotones("Muy grande", false, 26);
+
+        add(lamina_botones, BorderLayout.SOUTH);
+    }
+
+    // Método para crear botones de radio y asignarles eventos
+    public void colocarBotones(String nombre, boolean seleccionado, final int tamagno) {
+        JRadioButton boton = new JRadioButton(nombre, seleccionado);
+        migrupo.add(boton);
+        lamina_botones.add(boton);
+
+        // Evento para cambiar el tamaño del texto
+        boton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                texto.setFont(new Font(texto.getFont().getName(), Font.PLAIN, tamagno));
+            }
+        });
+    }
+}
+
+//Programa 2
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class Sintaxis_radio {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Marco_radio_sintaxis minarco = new Marco_radio_sintaxis();
+            minarco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        });
+    }
+}
+
+class Marco_radio_sintaxis extends JFrame {
+    private Lamina_radio_sintaxis milLamina;
+
+    public Marco_radio_sintaxis() {
+        setTitle("Selector de Opciones");
+        setBounds(350, 300, 500, 300);
+        milLamina = new Lamina_radio_sintaxis();
+        add(milLamina);
+        setVisible(true);
+    }
+}
+
+class Lamina_radio_sintaxis extends JPanel {
+    private JRadioButton botonAzul, botonRojo, botonVerde, botonMasculino;
+    private ButtonGroup grupoColores, grupoGenero;
+
+    public Lamina_radio_sintaxis() {
+        setLayout(new GridLayout(0, 1)); // Layout para organizar verticalmente
+
+        // Grupo 1: Colores
+        JPanel panelColores = new JPanel();
+        grupoColores = new ButtonGroup();
+        
+        botonAzul = new JRadioButton("Azul", false);
+        botonRojo = new JRadioButton("Rojo", true); // Seleccionado por defecto
+        botonVerde = new JRadioButton("Verde", false);
+
+        grupoColores.add(botonAzul);
+        grupoColores.add(botonRojo);
+        grupoColores.add(botonVerde);
+
+        panelColores.add(new JLabel("Colores:"));
+        panelColores.add(botonAzul);
+        panelColores.add(botonRojo);
+        panelColores.add(botonVerde);
+
+        // Grupo 2: Género
+        JPanel panelGenero = new JPanel();
+        grupoGenero = new ButtonGroup();
+        
+        botonMasculino = new JRadioButton("Masculino", false);
+        JRadioButton botonFemenino = new JRadioButton("Femenino", false);
+
+        grupoGenero.add(botonMasculino);
+        grupoGenero.add(botonFemenino);
+
+        panelGenero.add(new JLabel("Género:"));
+        panelGenero.add(botonMasculino);
+        panelGenero.add(botonFemenino);
+
+        // Añadir paneles a la lámina principal
+        add(panelColores);
+        add(panelGenero);
+
+        // Eventos para cambiar el fondo (ejemplo)
+        botonAzul.addActionListener(e -> setBackground(Color.BLUE));
+        botonRojo.addActionListener(e -> setBackground(Color.RED));
+        botonVerde.addActionListener(e -> setBackground(Color.GREEN));
+    }
+}
+
+//Programa 3
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class PruebaChecks {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            Marcocheck minarco = new Marcocheck();
+            minarco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        });
+    }
+}
+
+class Marcocheck extends JFrame {
+    private Laminacheck milamina;
+
+    public Marcocheck() {
+        setTitle("Selector de Estilos");
+        setBounds(559, 360, 556, 356);
+        milamina = new Laminacheck();
+        add(milamina);
+        setVisible(true);
+    }
+}
+
+class Laminacheck extends JPanel {
+    private JLabel texto;
+    private JCheckBox check1, check2;
+
+    public Laminacheck() {
+        setLayout(new BorderLayout());
+        Font miletra = new Font("Serif", Font.PLAIN, 24); // Fuente base
+
+        // Texto central
+        texto = new JLabel("En un lugar de la mancha de cuyo nombre......");
+        texto.setFont(miletra);
+        
+        JPanel laminatexto = new JPanel();
+        laminatexto.add(texto);
+        add(laminatexto, BorderLayout.CENTER);
+
+        // Checkboxes para estilos
+        check1 = new JCheckBox("Negrita");
+        check2 = new JCheckBox("Cursiva");
+        
+        check1.addActionListener(new ManejaChecks());
+        check2.addActionListener(new ManejaChecks());
+
+        JPanel laminachecks = new JPanel();
+        laminachecks.add(check1);
+        laminachecks.add(check2);
+        add(laminachecks, BorderLayout.SOUTH);
+    }
+
+    private class ManejaChecks implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            int tipo = Font.PLAIN; // Estilo base
+            
+            if (check1.isSelected()) tipo += Font.BOLD;
+            if (check2.isSelected()) tipo += Font.ITALIC;
+            
+            texto.setFont(new Font(texto.getFont().getName(), tipo, 24)); // Actualizar fuente
+        }
+    }
+}
+
+//Programa 4
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class PruebaCombo {
+    public static void main(String[] args) {
+        MarcoCombo miMarco = new MarcoCombo();
+        miMarco.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+}
+
+class MarcoCombo extends JFrame {
+    public MarcoCombo() {
+        setVisible(true);
+        setBounds(558, 308, 558, 408);
+        LaminaCombo miLamina = new LaminaCombo();
+        add(miLamina);
+    }
+}
+
+class LaminaCombo extends JPanel {
+    private JLabel texto;
+    private JComboBox<String> micombo;
+
+    public LaminaCombo() {
+        setLayout(new BorderLayout());
+
+        // Texto central
+        texto = new JLabel("En un lugar de la mancha de cuyo nombre...");
+        texto.setFont(new Font("Serif", Font.PLAIN, 18));
+        add(texto, BorderLayout.CENTER);
+
+        // Panel superior con JComboBox
+        JPanel lamina_norte = new JPanel(); // Corrección: operador "=" añadido
+        micombo = new JComboBox<>();
+        micombo.addItem("Serif");
+        micombo.addItem("SansSerif");
+        micombo.addItem("Monospaced");
+        micombo.addItem("Dialog");
+
+        micombo.addActionListener(new Evento_combo());
+        lamina_norte.add(micombo);
+        add(lamina_norte, BorderLayout.NORTH);
+    }
+
+    private class Evento_combo implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            // Actualiza la fuente del texto con la selección del combo
+            String fuenteSeleccionada = (String) micombo.getSelectedItem();
+            texto.setFont(new Font(fuenteSeleccionada, Font.PLAIN, 18));
+        }
+    }
+}
