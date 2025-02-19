@@ -1,0 +1,379 @@
+//Programa 1
+public interface ImpuestoAplicable {
+    double calcularIVA();
+    double calcularIEPS();
+}
+
+//Programa 2
+import java.util.ArrayList;
+import java.util.List;
+
+public class Inventario {
+    private List<Producto> productos;
+
+    public Inventario() {
+        this.productos = new ArrayList<>();
+    }
+
+    public void agregarProducto(Producto producto) {
+        productos.add(producto);
+    }
+
+    public Producto buscarProducto(String id) {
+        for (Producto producto : productos) {
+            if (producto.getId().equals(id)) {
+                return producto;
+            }
+        }
+        return null;
+    }
+
+    public boolean eliminarProducto(String id) {
+        return productos.removeIf(p -> p.getId().equals(id));
+    }
+
+    public List<Producto> listarProductos() {
+        return productos;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder salida = new StringBuilder();
+        for (Producto producto : productos) {
+            salida.append(producto.toString()).append("\n");
+        }
+        return salida.toString();
+    }
+}
+
+//Programa 3
+public abstract class ItemVenta {
+    protected String id;
+    protected String nombre;
+    protected double precio;
+
+    public ItemVenta(String id, String nombre, double precio) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+    }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
+
+    public abstract double calcularTotal();
+}
+
+//Programa 4
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+    	
+        Inventario inventario = new Inventario();
+        List<Venta> ventas = new ArrayList<>();
+        PersistenciaDatos<Producto> persistencia = new PersistenciaDatos<>();
+
+        inventario.agregarProducto(new Producto("001", "Arroz", 35, 10));
+        inventario.agregarProducto(new Producto("002", "Azúcar", 25, 10));
+
+        persistencia.guardarCSV(inventario.listarProductos(), "productos.csv");
+
+        List<Producto> productosCargados = persistencia.cargarCSV("productos.csv", Producto.class);
+
+        boolean salir = false;
+        while (!salir) {
+            System.out.println("\n--- MENÚ PRINCIPAL ---");
+            System.out.println("1. Gestionar Inventario");
+            System.out.println("2. Realizar Venta");
+            System.out.println("3. Salir");
+            int opcion = leerEntero("Seleccione una opción");
+
+            switch (opcion) {
+                case 1:
+                    gestionarInventario(inventario);
+                    break;
+                case 2:
+                    realizarVenta(inventario, ventas);
+                    break;
+                case 3:
+                    salir = true;
+                    System.out.println("Saliendo del sistema...");
+                    break;
+                default:
+                    System.out.println("Opción no válida.");
+            }
+        }
+    }
+
+    private static void gestionarInventario(Inventario inventario) {
+        System.out.println("\n--- GESTIÓN DE INVENTARIO ---");
+        System.out.println("1. Agregar Producto");
+        System.out.println("2. Listar Productos");
+        System.out.println("3. Eliminar Producto");
+        System.out.println("4. Volver al Menú Principal");
+
+        int opcion = leerEntero("Seleccione una opción");
+        switch (opcion) {
+            case 1:
+                agregarProducto(inventario);
+                break;
+            case 2:
+                listarProductos(inventario);
+                break;
+            case 3:
+                eliminarProducto(inventario);
+                break;
+            case 4:
+                System.out.println("Volviendo al menú principal...");
+                break;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    }
+
+    private static void agregarProducto(Inventario inventario) {
+        System.out.println("\n--- AGREGAR PRODUCTO ---");
+        String id = leerString("Ingrese el ID del producto:");
+        String nombre = leerString("Ingrese el nombre del producto:");
+        double precio = leerDouble("Ingrese el precio del producto:");
+        int stock = leerEntero("Ingrese el stock del producto:");
+
+        Producto nuevoProducto = new Producto(id, nombre, precio, stock);
+        inventario.agregarProducto(nuevoProducto);
+        System.out.println("Producto agregado exitosamente.");
+    }
+
+    private static void listarProductos(Inventario inventario) {
+        System.out.println("\n--- LISTA DE PRODUCTOS ---");
+        System.out.println(inventario);
+    }
+
+    private static void eliminarProducto(Inventario inventario) {
+        System.out.println("\n--- ELIMINAR PRODUCTO ---");
+        String id = leerString("Ingrese el ID del producto a eliminar:");
+        if (inventario.eliminarProducto(id)) {
+            System.out.println("Producto eliminado exitosamente.");
+        } else {
+            System.out.println("Producto no encontrado.");
+        }
+    }
+
+    private static void realizarVenta(Inventario inventario, List<Venta> ventas) {
+        System.out.println("\n--- REALIZAR VENTA ---");
+        String idVenta = "V" + (ventas.size() + 1);
+        String fecha = "2023-10-01";
+        Venta venta = new Venta(idVenta, fecha);
+
+        boolean continuar = true;
+        while (continuar) {
+            System.out.println("Ingrese el ID del producto a vender (o 'salir' para terminar):");
+            String idProducto = leerString("> ");
+            if (idProducto.equalsIgnoreCase("salir")) {
+                continuar = false;
+            } else {
+                Producto producto = inventario.buscarProducto(idProducto);
+                if (producto != null) {
+                    int cantidad = leerEntero("Ingrese la cantidad a vender:");
+                    venta.agregarProducto(producto, cantidad);
+                    System.out.println("Producto agregado a la venta.");
+                } else {
+                    System.out.println("Producto no encontrado.");
+                }
+            }
+        }
+
+        System.out.println("\n--- RESUMEN DE LA VENTA ---");
+        System.out.println(venta);
+        System.out.println("Subtotal: $" + venta.calcularSubtotal());
+        System.out.println("IVA: $" + venta.calcularIVA());
+        System.out.println("Total: $" + venta.calcularTotal());
+
+        ventas.add(venta);
+        System.out.println("Venta registrada exitosamente.");
+    }
+
+    private static String leerString(String mensaje) {
+        System.out.print(mensaje + ": ");
+        return System.console().readLine();
+    }
+
+    private static double leerDouble(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje + ": ");
+                return Double.parseDouble(System.console().readLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada no válida. Intente nuevamente.");
+            }
+        }
+    }
+
+    private static int leerEntero(String mensaje) {
+        while (true) {
+            try {
+                System.out.print(mensaje + ": ");
+                return Integer.parseInt(System.console().readLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Entrada no válida. Intente nuevamente.");
+            }
+        }
+    }
+}
+
+//Programa 5
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class PersistenciaDatos<T> {
+    public void guardarCSV(List<T> datos, String filePath) throws IOException {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath))) {
+            for (T dato : datos) {
+                if (dato instanceof Producto) {
+                    Producto producto = (Producto) dato;
+                    String linea = String.format("%s,%s,%.2f,%d",
+                        producto.getId(), producto.getNombre(), producto.getPrecio(), producto.getStock());
+                    bw.write(linea);
+                    bw.newLine();
+                }
+            }
+        }
+    }
+
+    public List<T> cargarCSV(String filePath, Class<T> type) throws IOException {
+        List<T> datos = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                if (type == Producto.class) {
+                    String[] partes = linea.split(",");
+                    Producto producto = new Producto(partes[0], partes[1], Double.parseDouble(partes[2]), Integer.parseInt(partes[3]));
+                    datos.add(type.cast(producto));
+                }
+            }
+        }
+        return datos;
+    }
+}
+
+//Programa 6
+public class Producto {
+    private String id;
+    private String nombre;
+    private double precio;
+    private int stock;
+
+    public Producto(String id, String nombre, double precio, int stock) {
+        this.id = id;
+        this.nombre = nombre;
+        this.precio = precio;
+        this.stock = stock;
+    }
+
+    public void agregarStock(int cantidad) {
+        if (cantidad > 0) {
+            this.stock += cantidad;
+        }
+    }
+
+    public boolean reducirStock(int cantidad) {
+        if (this.stock >= cantidad) {
+            this.stock -= cantidad;
+            return true;
+        }
+        return false;
+    }
+
+    public double calcularIVA() {
+        return this.precio * 0.16;
+    }
+
+    public double calcularIEPS() {
+        return this.precio * 0.08;
+    }
+
+    public double calcularTotal() {
+        return this.precio + calcularIVA() + calcularIEPS();
+    }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
+
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
+
+    public int getStock() { return stock; }
+    public void setStock(int stock) { this.stock = stock; }
+
+    @Override
+    public String toString() {
+        return "Producto{id='" + id + "', nombre='" + nombre + "', precio=" + precio + ", stock=" + stock + "}";
+    }
+}
+
+//Programa 7
+import java.util.ArrayList;
+import java.util.List;
+
+public class Venta {
+    private String id;
+    private String fecha;
+    private List<Producto> productosVendidos;
+
+    public Venta(String id, String fecha) {
+        this.id = id;
+        this.fecha = fecha;
+        this.productosVendidos = new ArrayList<>();
+    }
+
+    public void agregarProducto(Producto producto, int cantidad) {
+        if (producto.reducirStock(cantidad)) {
+            for (int i = 0; i < cantidad; i++) {
+                productosVendidos.add(producto);
+            }
+        } else {
+            System.out.println("No hay suficiente stock para el producto: " + producto.getNombre());
+        }
+    }
+
+    public double calcularSubtotal() {
+        double subtotal = 0;
+        for (Producto producto : productosVendidos) {
+            subtotal += producto.getPrecio();
+        }
+        return subtotal;
+    }
+
+    public double calcularIVA() {
+        return calcularSubtotal() * 0.16;
+    }
+
+    public double calcularTotal() {
+        return calcularSubtotal() + calcularIVA();
+    }
+
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+
+    public String getFecha() { return fecha; }
+    public void setFecha(String fecha) { this.fecha = fecha; }
+
+    public List<Producto> getProductosVendidos() { return productosVendidos; }
+
+    @Override
+    public String toString() {
+        return "Venta{id='" + id + "', fecha='" + fecha + "', productosVendidos=" + productosVendidos.size() + "}";
+    }
+}
