@@ -1,1 +1,212 @@
+//Programa 1
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
 
+public class AplicacionClima extends JFrame {
+ 
+    private JLabel etiquetaCondicion = new JLabel("Condición");
+    private JLabel etiquetaTemperatura = new JLabel("57°F");
+    private JLabel etiquetaHumedad = new JLabel("91%");
+    private JLabel etiquetaPrecipitacion = new JLabel("59%");
+    private JLabel etiquetaViento = new JLabel("29 mph");
+
+    public AplicacionClima() {
+       
+        setTitle("Aplicación del Clima");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(350, 300);
+        setLocationRelativeTo(null);
+
+       
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+   
+        JLabel etiquetaTitulo = new JLabel("¿Cómo está el clima?");
+        etiquetaTitulo.setFont(new Font("Arial", Font.BOLD, 18));
+        etiquetaTitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+  
+        JLabel etiquetaBienvenida = new JLabel("¡Bienvenido a la aplicación del clima! Presiona el botón 'Actualizar' para obtener el pronóstico más reciente.");
+        etiquetaBienvenida.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+       
+        JPanel panelCodigoPostal = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JLabel etiquetaCodigoPostal = new JLabel("Código Postal:");
+        JTextField campoCodigoPostal = new JTextField(10);
+        campoCodigoPostal.setText("12345");
+        panelCodigoPostal.add(etiquetaCodigoPostal);
+        panelCodigoPostal.add(campoCodigoPostal);
+
+        
+        JButton botonActualizar = new JButton("Actualizar");
+        botonActualizar.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        
+        JPanel panelClima = new JPanel(new GridLayout(5, 1, 10, 5));
+        panelClima.setBorder(BorderFactory.createTitledBorder("Condiciones Actuales"));
+        
+       
+        Font fuenteDatos = new Font("Arial", Font.PLAIN, 14);
+        agregarDatoClima(panelClima, "Condición:", etiquetaCondicion);
+        agregarDatoClima(panelClima, "Temperatura:", etiquetaTemperatura);
+        agregarDatoClima(panelClima, "Humedad:", etiquetaHumedad);
+        agregarDatoClima(panelClima, "Precipitación:", etiquetaPrecipitacion);
+        agregarDatoClima(panelClima, "Viento:", etiquetaViento);
+
+        
+        panelPrincipal.add(etiquetaTitulo);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelPrincipal.add(etiquetaBienvenida);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 20)));
+        panelPrincipal.add(panelCodigoPostal);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 10)));
+        panelPrincipal.add(botonActualizar);
+        panelPrincipal.add(Box.createRigidArea(new Dimension(0, 20)));
+        panelPrincipal.add(panelClima);
+
+        
+        botonActualizar.addActionListener((ActionEvent e) -> {
+          
+            JOptionPane.showMessageDialog(this, "Actualizando clima para: " + campoCodigoPostal.getText());
+        });
+
+        add(panelPrincipal);
+        setVisible(true);
+    }
+
+    private void agregarDatoClima(JPanel panel, String etiqueta, JLabel valor) {
+        JPanel fila = new JPanel(new BorderLayout());
+        fila.add(new JLabel(etiqueta), BorderLayout.WEST);
+        fila.add(valor, BorderLayout.EAST);
+        panel.add(fila);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new AplicacionClima());
+    }
+}
+
+//Programa 2
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class Proto_PDF02_01 {
+    private JFrame frame;
+    private JTable table;
+    private JTextField subtotalField;
+    private JTextField totalField;
+    private JTextField paymentField;
+    private JTextField changeField;
+    private JTextField impuestoField;
+
+    public static void main(String[] args) {
+        EventQueue.invokeLater(() -> {
+            try {
+                Proto_PDF02_01 window = new Proto_PDF02_01();
+                window.frame.setVisible(true);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public Proto_PDF02_01() {
+        initialize();
+    }
+
+    private void initialize() {
+        frame = new JFrame();
+        frame.setBounds(100, 100, 800, 600);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().setLayout(null);
+
+        // Panel numérico
+        JPanel numPadPanel = new JPanel();
+        numPadPanel.setBounds(10, 11, 200, 300);
+        frame.getContentPane().add(numPadPanel);
+        numPadPanel.setLayout(new GridLayout(4, 3, 5, 5));
+
+        // Botones numéricos
+        String[] numeros = {"7", "8", "9", "4", "5", "6", "1", "2", "3", "0", "C", "="};
+        for (String texto : numeros) {
+            JButton btn = new JButton(texto);
+            btn.addActionListener(new NumPadListener());
+            numPadPanel.add(btn);
+        }
+
+        // Tabla de productos
+        String[] columnas = {"Producto", "Cantidad", "Precio"};
+        DefaultTableModel model = new DefaultTableModel(columnas, 0);
+        table = new JTable(model);
+        JScrollPane scrollPane = new JScrollPane(table);
+        scrollPane.setBounds(220, 11, 550, 200);
+        frame.getContentPane().add(scrollPane);
+
+        // Panel de cálculos
+        JPanel calculosPanel = new JPanel();
+        calculosPanel.setBounds(220, 220, 550, 300);
+        calculosPanel.setLayout(null);
+        frame.getContentPane().add(calculosPanel);
+
+        // Campos y etiquetas
+        agregarComponente(calculosPanel, "Subtotal:", 10, 10, subtotalField = new JTextField());
+        agregarComponente(calculosPanel, "Impuesto (%):", 10, 50, impuestoField = new JTextField());
+        agregarComponente(calculosPanel, "Total:", 10, 90, totalField = new JTextField());
+        agregarComponente(calculosPanel, "Pago:", 10, 130, paymentField = new JTextField());
+        agregarComponente(calculosPanel, "Cambio:", 10, 170, changeField = new JTextField());
+
+        // Botones adicionales
+        JButton btnPage = new JButton("Page");
+        btnPage.setBounds(400, 210, 120, 30);
+        calculosPanel.add(btnPage);
+
+        JButton btnRestobar = new JButton("Restobar");
+        btnRestobar.setBounds(400, 250, 120, 30);
+        calculosPanel.add(btnRestobar);
+
+        JButton btnRemover = new JButton("Remover Item");
+        btnRemover.setBounds(400, 290, 120, 30);
+        calculosPanel.add(btnRemover);
+    }
+
+    private void agregarComponente(JPanel panel, String textoLabel, int x, int y, JTextField campo) {
+        JLabel label = new JLabel(textoLabel);
+        label.setBounds(x, y, 100, 20);
+        panel.add(label);
+        
+        campo.setBounds(x + 110, y, 150, 20);
+        panel.add(campo);
+    }
+
+    private class NumPadListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            String comando = e.getActionCommand();
+            
+            if (comando.equals("C")) {
+                paymentField.setText("");
+            } else if (comando.equals("=")) {
+                calcularTotal();
+            } else {
+                paymentField.setText(paymentField.getText() + comando);
+            }
+        }
+    }
+
+    private void calcularTotal() {
+        try {
+            double subtotal = Double.parseDouble(subtotalField.getText());
+            double impuesto = Double.parseDouble(impuestoField.getText());
+            double total = subtotal * (1 + impuesto/100);
+            totalField.setText(String.format("%.2f", total));
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(frame, "Valores inválidos");
+        }
+    }
+}
