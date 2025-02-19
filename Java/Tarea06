@@ -1,0 +1,586 @@
+//Programa 1
+
+    private JTextField campoMonto;
+    private JLabel etiquetaPropina;
+    private JLabel etiquetaTotal;
+    private JButton boton15;
+    private JButton boton20;
+    private JButton botonRedondearAbajo;
+    private JButton botonRedondearArriba;
+    private double porcentaje = 0.15;
+    private boolean redondearArriba = false;
+
+    public CalculadoraGrid() {
+        setTitle("Calculadora con Grid");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 300);
+        setLocationRelativeTo(null);
+
+        // Crear panel principal con GridBagLayout
+        JPanel panelPrincipal = new JPanel(new GridBagLayout());
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        GridBagConstraints gbc = new GridBagConstraints();
+
+        // Configuración común
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        // Fila 0: Campo de monto
+        gbc.gridy = 0;
+        gbc.gridx = 0;
+        gbc.gridwidth = 2;
+        panelPrincipal.add(new JLabel("Cuenta:"), gbc);
+        
+        gbc.gridx = 2;
+        campoMonto = new JTextField("Ingrese monto");
+        panelPrincipal.add(campoMonto, gbc);
+
+        // Fila 1: Propina
+        gbc.gridy = 1;
+        gbc.gridx = 0;
+        gbc.gridwidth = 1;
+        panelPrincipal.add(new JLabel("Propina:"), gbc);
+        
+        gbc.gridx = 2;
+        etiquetaPropina = new JLabel("0.00");
+        panelPrincipal.add(etiquetaPropina, gbc);
+
+        // Fila 2: Total
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        panelPrincipal.add(new JLabel("Total:"), gbc);
+        
+        gbc.gridx = 2;
+        etiquetaTotal = new JLabel("0.00");
+        panelPrincipal.add(etiquetaTotal, gbc);
+
+        // Fila 3: Porcentajes (parte inferior)
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        gbc.gridwidth = 3;
+        JPanel panelPorcentajes = new JPanel(new GridLayout(1, 2, 10, 0));
+        boton15 = crearBoton("15%", e -> cambiarPorcentaje(0.15));
+        boton20 = crearBoton("20%", e -> cambiarPorcentaje(0.20));
+        panelPorcentajes.add(boton15);
+        panelPorcentajes.add(boton20);
+        panelPrincipal.add(panelPorcentajes, gbc);
+
+        // Fila 4: Redondeo (parte inferior)
+        gbc.gridy = 4;
+        JPanel panelRedondeo = new JPanel(new GridLayout(1, 2, 10, 0));
+        botonRedondearAbajo = crearBoton("Redondear Abajo", e -> cambiarRedondeo(false));
+        botonRedondearArriba = crearBoton("Redondear Arriba", e -> cambiarRedondeo(true));
+        panelRedondeo.add(botonRedondearAbajo);
+        panelRedondeo.add(botonRedondearArriba);
+        panelPrincipal.add(panelRedondeo, gbc);
+
+        // Configurar eventos
+        campoMonto.addActionListener(e -> calcularTodo());
+        
+        add(panelPrincipal);
+        actualizarEstilos();
+        setVisible(true);
+    }
+
+    private JButton crearBoton(String texto, ActionListener accion) {
+        JButton boton = new JButton(texto);
+        boton.addActionListener(accion);
+        boton.setFocusPainted(false);
+        boton.setBackground(new Color(240, 240, 240));
+        return boton;
+    }
+
+    private void calcularTodo() {
+        try {
+            double monto = Double.parseDouble(campoMonto.getText());
+            double propina = monto * porcentaje;
+            double total = monto + propina;
+
+            if (redondearArriba) {
+                total = Math.ceil(total);
+            } else {
+                total = Math.floor(total);
+            }
+            propina = total - monto;
+
+            etiquetaPropina.setText(String.format("%.2f", propina));
+            etiquetaTotal.setText(String.format("%.2f", total));
+        } catch (NumberFormatException ex) {
+            etiquetaPropina.setText("0.00");
+            etiquetaTotal.setText("0.00");
+        }
+    }
+
+    private void cambiarPorcentaje(double nuevoPorcentaje) {
+        porcentaje = nuevoPorcentaje;
+        actualizarEstilos();
+        calcularTodo();
+    }
+
+    private void cambiarRedondeo(boolean arriba) {
+        redondearArriba = arriba;
+        actualizarEstilos();
+        calcularTodo();
+    }
+
+    private void actualizarEstilos() {
+        boton15.setBackground(porcentaje == 0.15 ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        boton20.setBackground(porcentaje == 0.20 ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        botonRedondearArriba.setBackground(redondearArriba ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        botonRedondearAbajo.setBackground(!redondearArriba ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new CalculadoraGrid());
+    }
+}
+
+//Programa 2
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CalculadoraPropina2 extends JFrame {
+    private JTextField campoMonto;
+    private JLabel etiquetaPropina;
+    private JLabel etiquetaTotal;
+    private JButton boton15;
+    private JButton boton20;
+    private JButton botonRedondearAbajo;
+    private JButton botonRedondearArriba;
+    private double porcentaje = 0.15;
+    private boolean redondearArriba = false;
+
+    public CalculadoraPropina2() {
+        setTitle("Calculadora de Propinas");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(350, 450);
+        setLocationRelativeTo(null);
+
+        // panel principal con boxLayout vertical
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // seccion cuenta
+        JPanel panelCuenta = crearSeccionVertical("Cuenta");
+        campoMonto = new JTextField("Ingrese el monto");
+        panelCuenta.add(campoMonto);
+        
+        // seccion propina y Total
+        JPanel panelMontos = crearSeccionVertical("Montos");
+        panelMontos.add(crearFilaHorizontal("Propina", "0.00"));
+        panelMontos.add(crearFilaHorizontal("Total", "0.00"));
+        
+        // extraer referencias de las etiquetas
+        etiquetaPropina = (JLabel) ((JPanel) panelMontos.getComponent(1)).getComponent(1);
+        etiquetaTotal = (JLabel) ((JPanel) panelMontos.getComponent(2)).getComponent(1);
+
+        // seccion porcentaje
+        JPanel panelPorcentaje = crearSeccionVertical("Porcentaje de Propina");
+        JPanel botonesPorcentaje = new JPanel(new GridLayout(1, 2, 10, 0));
+        boton15 = crearBotonEstilado("15%");
+        boton20 = crearBotonEstilado("20%");
+        botonesPorcentaje.add(boton15);
+        botonesPorcentaje.add(boton20);
+
+        // seccion redondeo
+        JPanel panelRedondeo = crearSeccionVertical("Redondeo");
+        JPanel botonesRedondeo = new JPanel(new GridLayout(1, 2, 10, 0));
+        botonRedondearAbajo = crearBotonEstilado("Redondear Abajo");
+        botonRedondearArriba = crearBotonEstilado("Redondear Arriba");
+        botonesRedondeo.add(botonRedondearAbajo);
+        botonesRedondeo.add(botonRedondearArriba);
+
+        // ensamblar componentes
+        panelPrincipal.add(panelCuenta);
+        panelPrincipal.add(panelMontos);
+        panelPrincipal.add(panelPorcentaje);
+        panelPorcentaje.add(botonesPorcentaje);
+        panelPrincipal.add(panelRedondeo);
+        panelRedondeo.add(botonesRedondeo);
+
+        // configurar eventos
+        campoMonto.addActionListener(e -> calcularTodo());
+        boton15.addActionListener(e -> cambiarPorcentaje(0.15));
+        boton20.addActionListener(e -> cambiarPorcentaje(0.20));
+        botonRedondearAbajo.addActionListener(e -> cambiarRedondeo(false));
+        botonRedondearArriba.addActionListener(e -> cambiarRedondeo(true));
+
+        add(panelPrincipal);
+        setVisible(true);
+    }
+
+    private JPanel crearSeccionVertical(String titulo) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JLabel etiqueta = new JLabel(titulo);
+        etiqueta.setFont(etiqueta.getFont().deriveFont(Font.BOLD, 14));
+        panel.add(etiqueta);
+        return panel;
+    }
+
+    private JPanel crearFilaHorizontal(String texto, String valor) {
+        JPanel fila = new JPanel(new BorderLayout());
+        JLabel etiqueta = new JLabel(texto);
+        JLabel valorLabel = new JLabel(valor);
+        fila.add(etiqueta, BorderLayout.WEST);
+        fila.add(valorLabel, BorderLayout.EAST);
+        fila.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        return fila;
+    }
+
+    private JButton crearBotonEstilado(String texto) {
+        JButton boton = new JButton(texto);
+        boton.setFocusPainted(false);
+        boton.setBackground(new Color(240, 240, 240));
+        boton.setPreferredSize(new Dimension(120, 35));
+        return boton;
+    }
+
+    private void calcularTodo() {
+        try {
+            double monto = Double.parseDouble(campoMonto.getText());
+            double propina = monto * porcentaje;
+            double total = monto + propina;
+
+            if (redondearArriba) {
+                total = Math.ceil(total);
+                propina = total - monto;
+            } else {
+                total = Math.floor(total);
+                propina = total - monto;
+            }
+
+            etiquetaPropina.setText(String.format("%.2f", propina));
+            etiquetaTotal.setText(String.format("%.2f", total));
+        } catch (NumberFormatException ex) {
+            etiquetaPropina.setText("0.00");
+            etiquetaTotal.setText("0.00");
+        }
+    }
+
+    private void cambiarPorcentaje(double nuevoPorcentaje) {
+        porcentaje = nuevoPorcentaje;
+        boton15.setBackground(nuevoPorcentaje == 0.15 ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        boton20.setBackground(nuevoPorcentaje == 0.20 ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        calcularTodo();
+    }
+
+    private void cambiarRedondeo(boolean arriba) {
+        redondearArriba = arriba;
+        botonRedondearArriba.setBackground(arriba ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        botonRedondearAbajo.setBackground(!arriba ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        calcularTodo();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new CalculadoraPropina());
+    }
+}
+
+//Programa 3
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CalculadoraPropina extends JFrame {
+    private JTextField campoMonto;
+    private JLabel etiquetaPropina;
+    private JLabel etiquetaTotal;
+    private JButton boton15Porciento;
+    private JButton boton20Porciento;
+    private JButton botonRedondearAbajo;
+    private JButton botonRedondearArriba;
+    private double porcentajePropina = 0.15;
+    private boolean redondearArriba = false;
+
+    public CalculadoraPropina() {
+        setTitle("Calculadora de Propinas");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(300, 400);
+        setLocationRelativeTo(null);
+
+        // panel principal con boxLayout vertical
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        // seccion cuenta
+        JPanel panelCuenta = new JPanel(new BorderLayout());
+        JLabel etiquetaCuenta = new JLabel("Cuenta");
+        campoMonto = new JTextField("Ingrese Monto");
+        panelCuenta.add(etiquetaCuenta, BorderLayout.NORTH);
+        panelCuenta.add(campoMonto, BorderLayout.CENTER);
+        panelCuenta.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+
+        // seccion propina
+        JPanel panelPropina = crearPanelMonto("Propina", "0.00");
+        etiquetaPropina = (JLabel) panelPropina.getComponent(1);
+
+        // seccion total
+        JPanel panelTotal = crearPanelMonto("Total", "0.00");
+        etiquetaTotal = (JLabel) panelTotal.getComponent(1);
+
+        // seccion porcentaje
+        JPanel panelPorcentaje = new JPanel();
+        panelPorcentaje.setLayout(new FlowLayout(FlowLayout.LEFT));
+        JLabel etiquetaPorcentaje = new JLabel("Porcentaje de Propina");
+        boton15Porciento = new JButton("15%");
+        boton20Porciento = new JButton("20%");
+        
+        // botones de porcentaje
+        boton15Porciento.addActionListener(new ManejadorPorcentaje(0.15));
+        boton20Porciento.addActionListener(new ManejadorPorcentaje(0.20));
+        
+        panelPorcentaje.add(etiquetaPorcentaje);
+        panelPorcentaje.add(boton15Porciento);
+        panelPorcentaje.add(boton20Porciento);
+        panelPorcentaje.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+
+        // seccion redondeo
+        JPanel panelRedondeo = new JPanel();
+        panelRedondeo.setLayout(new FlowLayout(FlowLayout.LEFT));
+        botonRedondearAbajo = new JButton("Redondear Abajo");
+        botonRedondearArriba = new JButton("Redondear Arriba");
+        
+        // botones de redondeo
+        botonRedondearAbajo.addActionListener(new ManejadorRedondeo(false));
+        botonRedondearArriba.addActionListener(new ManejadorRedondeo(true));
+        
+        panelRedondeo.add(botonRedondearAbajo);
+        panelRedondeo.add(botonRedondearArriba);
+        panelRedondeo.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+
+        // añadir todos los paneles a la principal
+        panelPrincipal.add(panelCuenta);
+        panelPrincipal.add(panelPropina);
+        panelPrincipal.add(panelTotal);
+        panelPrincipal.add(panelPorcentaje);
+        panelPrincipal.add(panelRedondeo);
+
+        // configurar el campo de monto
+        campoMonto.addActionListener(e -> calcularValores());
+
+        add(panelPrincipal);
+        setVisible(true);
+    }
+
+    private JPanel crearPanelMonto(String titulo, String valorInicial) {
+        JPanel panel = new JPanel(new BorderLayout());
+        JLabel etiquetaTitulo = new JLabel(titulo);
+        JLabel etiquetaValor = new JLabel(valorInicial);
+        panel.add(etiquetaTitulo, BorderLayout.WEST);
+        panel.add(etiquetaValor, BorderLayout.EAST);
+        panel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        return panel;
+    }
+
+    private void calcularValores() {
+        try {
+            double monto = Double.parseDouble(campoMonto.getText());
+            double propina = monto * porcentajePropina;
+            double total = monto + propina;
+
+            if (redondearArriba) {
+                total = Math.ceil(total);
+                propina = total - monto;
+            } else {
+                total = Math.floor(total);
+                propina = total - monto;
+            }
+
+            etiquetaPropina.setText(String.format("%.2f", propina));
+            etiquetaTotal.setText(String.format("%.2f", total));
+        } catch (NumberFormatException ex) {
+            etiquetaPropina.setText("0.00");
+            etiquetaTotal.setText("0.00");
+        }
+    }
+
+    private class ManejadorPorcentaje implements ActionListener {
+        private double porcentaje;
+
+        public ManejadorPorcentaje(double porcentaje) {
+            this.porcentaje = porcentaje;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            porcentajePropina = porcentaje;
+            boton15Porciento.setEnabled(porcentaje != 0.15);
+            boton20Porciento.setEnabled(porcentaje != 0.20);
+            calcularValores();
+        }
+    }
+
+    private class ManejadorRedondeo implements ActionListener {
+        private boolean redondearArribaValor;
+
+        public ManejadorRedondeo(boolean redondearArriba) {
+            this.redondearArribaValor = redondearArriba;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            redondearArriba = redondearArribaValor;
+            botonRedondearAbajo.setEnabled(redondearArribaValor);
+            botonRedondearArriba.setEnabled(!redondearArribaValor);
+            calcularValores();
+        }
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new CalculadoraPropina());
+    }
+}
+
+//Programa 4
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class CalculadoraPropina2 extends JFrame {
+    private JTextField campoMonto;
+    private JLabel etiquetaPropina;
+    private JLabel etiquetaTotal;
+    private JButton boton15;
+    private JButton boton20;
+    private JButton botonRedondearAbajo;
+    private JButton botonRedondearArriba;
+    private double porcentaje = 0.15;
+    private boolean redondearArriba = false;
+
+    public CalculadoraPropina2() {
+        setTitle("Calculadora de Propinas");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(350, 450);
+        setLocationRelativeTo(null);
+
+        // panel principal con boxLayout vertical
+        JPanel panelPrincipal = new JPanel();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        panelPrincipal.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+
+        // seccion cuenta
+        JPanel panelCuenta = crearSeccionVertical("Cuenta");
+        campoMonto = new JTextField("Ingrese el monto");
+        panelCuenta.add(campoMonto);
+        
+        // seccion propina y Total
+        JPanel panelMontos = crearSeccionVertical("Montos");
+        panelMontos.add(crearFilaHorizontal("Propina", "0.00"));
+        panelMontos.add(crearFilaHorizontal("Total", "0.00"));
+        
+        // extraer referencias de las etiquetas
+        etiquetaPropina = (JLabel) ((JPanel) panelMontos.getComponent(1)).getComponent(1);
+        etiquetaTotal = (JLabel) ((JPanel) panelMontos.getComponent(2)).getComponent(1);
+
+        // seccion porcentaje
+        JPanel panelPorcentaje = crearSeccionVertical("Porcentaje de Propina");
+        JPanel botonesPorcentaje = new JPanel(new GridLayout(1, 2, 10, 0));
+        boton15 = crearBotonEstilado("15%");
+        boton20 = crearBotonEstilado("20%");
+        botonesPorcentaje.add(boton15);
+        botonesPorcentaje.add(boton20);
+
+        // seccion redondeo
+        JPanel panelRedondeo = crearSeccionVertical("Redondeo");
+        JPanel botonesRedondeo = new JPanel(new GridLayout(1, 2, 10, 0));
+        botonRedondearAbajo = crearBotonEstilado("Redondear Abajo");
+        botonRedondearArriba = crearBotonEstilado("Redondear Arriba");
+        botonesRedondeo.add(botonRedondearAbajo);
+        botonesRedondeo.add(botonRedondearArriba);
+
+        // ensamblar componentes
+        panelPrincipal.add(panelCuenta);
+        panelPrincipal.add(panelMontos);
+        panelPrincipal.add(panelPorcentaje);
+        panelPorcentaje.add(botonesPorcentaje);
+        panelPrincipal.add(panelRedondeo);
+        panelRedondeo.add(botonesRedondeo);
+
+        // configurar eventos
+        campoMonto.addActionListener(e -> calcularTodo());
+        boton15.addActionListener(e -> cambiarPorcentaje(0.15));
+        boton20.addActionListener(e -> cambiarPorcentaje(0.20));
+        botonRedondearAbajo.addActionListener(e -> cambiarRedondeo(false));
+        botonRedondearArriba.addActionListener(e -> cambiarRedondeo(true));
+
+        add(panelPrincipal);
+        setVisible(true);
+    }
+
+    private JPanel crearSeccionVertical(String titulo) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        JLabel etiqueta = new JLabel(titulo);
+        etiqueta.setFont(etiqueta.getFont().deriveFont(Font.BOLD, 14));
+        panel.add(etiqueta);
+        return panel;
+    }
+
+    private JPanel crearFilaHorizontal(String texto, String valor) {
+        JPanel fila = new JPanel(new BorderLayout());
+        JLabel etiqueta = new JLabel(texto);
+        JLabel valorLabel = new JLabel(valor);
+        fila.add(etiqueta, BorderLayout.WEST);
+        fila.add(valorLabel, BorderLayout.EAST);
+        fila.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+        return fila;
+    }
+
+    private JButton crearBotonEstilado(String texto) {
+        JButton boton = new JButton(texto);
+        boton.setFocusPainted(false);
+        boton.setBackground(new Color(240, 240, 240));
+        boton.setPreferredSize(new Dimension(120, 35));
+        return boton;
+    }
+
+    private void calcularTodo() {
+        try {
+            double monto = Double.parseDouble(campoMonto.getText());
+            double propina = monto * porcentaje;
+            double total = monto + propina;
+
+            if (redondearArriba) {
+                total = Math.ceil(total);
+                propina = total - monto;
+            } else {
+                total = Math.floor(total);
+                propina = total - monto;
+            }
+
+            etiquetaPropina.setText(String.format("%.2f", propina));
+            etiquetaTotal.setText(String.format("%.2f", total));
+        } catch (NumberFormatException ex) {
+            etiquetaPropina.setText("0.00");
+            etiquetaTotal.setText("0.00");
+        }
+    }
+
+    private void cambiarPorcentaje(double nuevoPorcentaje) {
+        porcentaje = nuevoPorcentaje;
+        boton15.setBackground(nuevoPorcentaje == 0.15 ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        boton20.setBackground(nuevoPorcentaje == 0.20 ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        calcularTodo();
+    }
+
+    private void cambiarRedondeo(boolean arriba) {
+        redondearArriba = arriba;
+        botonRedondearArriba.setBackground(arriba ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        botonRedondearAbajo.setBackground(!arriba ? Color.LIGHT_GRAY : new Color(240, 240, 240));
+        calcularTodo();
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> new CalculadoraPropina());
+    }
+}
